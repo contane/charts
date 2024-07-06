@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  foreman:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2024-07-06T17:49:08.411586085Z"
+    description: A web UI for managing Renovate jobs.
+    digest: 49d9b9f4e5d03f8017bec8e5999b1425b3c89053cd620dbffe8e2a2b10aabe51
+    name: foreman
+    type: application
+    urls:
+    - https://github.com/contane/charts/releases/download/foreman-0.1.0/foreman-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-07-06T17:49:08.411592728Z"
