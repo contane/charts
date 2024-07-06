@@ -1,0 +1,31 @@
+name: Package Charts
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Helm
+        uses: azure/setup-helm@v4.2.0
+      - name: Package charts
+        shell: bash
+        run: |
+          cd charts/ || exit 1
+          for directory in */; do
+            echo "Packaging chart $directory..."
+            cd "$directory" || exit 1
+            helm dep build --skip-refresh .
+            helm package .
+            cd ..
+          done

@@ -1,0 +1,117 @@
+## @section Global configuration options
+##
+global:
+  ## @param nameOverride String to partially override common.names.fullname
+  ##
+  nameOverride: ""
+  ## @param commonLabels Labels to add to all deployed objects
+  ##
+  commonLabels: {}
+  ## @param commonAnnotations Annotations to add to all deployed objects
+  ##
+  commonAnnotations: {}
+
+## @section Image configuration
+## @param image.repository Docker image repository
+## @param image.tag Docker image tag
+## @param image.pullPolicy Docker image pull policy
+## @param image.pullSecrets Docker registry secret names as an array
+##
+image:
+  repository: contane/foreman
+  tag: 0.1.0
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+## @param replicaCount Number of replicas to deploy
+##
+replicaCount: 2
+
+## @section Resource requests and limits
+## All parameters have default value set to prevent possible resource leaks.
+## ref: https://kubernetes.io/docs/user-guide/compute-resources/
+## @param resources.limits The resources limits for the container
+## @param resources.requests The requested resources for the container
+##
+resources:
+  limits:
+    memory: "512Mi"
+    cpu: "250m"
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+
+## @param serviceAccountName Service Account Name
+##
+serviceAccountName: ""
+
+## @section Ingress configuration
+## @param ingress.className
+## @param ingress.host
+## @param ingress.path
+## @param ingress.annotations
+## @param ingress.tls
+##
+ingress:
+  className: nginx
+  host: foreman.dev.local
+  path: /
+  annotations: {}
+  tls:
+    secretName: foreman-ingress-tls
+
+## @section Application runtime configuration
+##
+config:
+  ## @param config.existingSecret Name of an existing secret containing the configuration
+  existingSecret: ""
+  ## @param config.existingConfigMap Name of an existing configmap containing the configuration
+  existingConfigMap: ""
+
+  ## @param config.cronJob Configuration options for the CronJob
+  ##
+  cronJob:
+    ## @param config.cronJob.namespace Namespace where the CronJob is deployed
+    namespace: ""
+    ## @param config.cronJob.name Name of the CronJob
+    name: ""
+
+  ## @param config.cookies
+  ##
+  cookies:
+    ## @param config.cookies.key Key which is used to encrypt the session cookie
+    key: ""
+    ## @param config.cookies.maxAge Max age of the session cookie, e.g. "24h" or "7 days"
+    maxAge: ""
+
+  ## @param config.auth
+  ##
+  auth:
+    ## @param config.auth.local Configuration options for local login
+    ##
+    local:
+      ## @param config.auth.local.enabled Enable local authentication
+      enabled: false
+      ## @param config.auth.local.username Username of the local admin user
+      username: ""
+      ## @param config.auth.local.password Password of the local admin user
+      password: ""
+    ## @param config.auth.oidc Configuration options for OIDC login
+    ##
+    oidc:
+      ## @param config.oidc.enabled Enable OIDC authentication
+      enabled: false
+      ## @param config.oidc.issuer Issuer of the OIDC provider
+      issuer: ""
+      ## @param config.oidc.clientId Client ID of the OIDC provider
+      clientId: ""
+      ## @param config.oidc.clientSecret Client Secret of the OIDC provider
+      clientSecret: ""
+      ## @param config.auth.oidc.publicUrl Public URL of the foreman instance
+      publicUrl: ""
+
+  ## @param config.gitlab
+  ##
+  gitlab:
+    ## @param config.gitlab.host Optional: URL of the GitLab instance (if GitLab features should be active)
+    host: ""
