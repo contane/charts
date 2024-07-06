@@ -5,3 +5,14 @@ description: A web UI for managing Renovate jobs.
 version: 0.1.0
 # renovate: image=contane/foreman
 appVersion: 0.1.0
+home: https://contane.net
+keywords:
+  - contane
+  - foreman
+  - renovate
+  - renovate-ui
+maintainers:
+  - name: Contane
+    url: https://github.com/contane/charts
+sources:
+  - https://github.com/contane/charts/tree/main/charts/foreman
