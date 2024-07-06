@@ -1,0 +1,12 @@
+# Chart dependencies
+**/charts/**/*.tgz
+
+# Fleet project files
+.fleet
+
+# IntelliJ project files
+.idea
+*.iml
+
+/test/.bin
+/test/.kubeconform
