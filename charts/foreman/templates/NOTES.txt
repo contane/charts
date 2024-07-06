@@ -1,0 +1,24 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+** Please wait while the chart is being deployed **
+
+1. Accessing foreman after a successful deployment
+  You may access foreman via the following URL {{ .Values.ingress.host }}
+
+2. Login in to foreman
+  {{- if .Values.config.auth.local.enabled }}
+  {{- if not (empty .Values.config.auth.local.password) }}
+  You configured local login without a password. The Chart generated a random password for you.
+  {{- else }}
+  You configured local login.
+  {{- end }}
+    Login using the following credentials:
+      Username: {{ .Values.config.auth.local.username }}
+      echo "Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "foreman.secretName" . }} -o jsonpath="{.data.01-config\.json.auth.local.password}" | base64 --decode)"
+  {{- end }}
+
+  {{- if .Values.config.auth.oidc.enabled }}
+  OIDC login is configured. Visit {{ .Values.ingress.host }} and click the OIDC login button. You will be redirected to your OIDC provider.
+  {{- end }}
