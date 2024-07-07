@@ -45,17 +45,7 @@ We recommend proper configuration when using this chart in a production environm
 | `resources.requests.memory` | Memory requests for the container | `256Mi` |
 | `resources.requests.cpu`    | CPU requests for the container    | `100m`  |
 
-### Ingress parameters
-
-| Name                     | Description                     | Value                 |
-|--------------------------|---------------------------------|-----------------------|
-| `ingress.className`      | Memory limits for the container | `nginx`               |
-| `ingress.host`           | Memory limits for the container | `foreman.dev.local`   |
-| `ingress.path`           | Memory limits for the container | `/`                   |
-| `ingress.annotations`    | Memory limits for the container | `{}`                  |
-| `ingress.tls.secretName` | Memory limits for the container | `foreman-ingress-tls` |
-
-### Config parameters
+### Deployment parameters
 
 | Name                            | Description                                                                | Value   |
 |---------------------------------|----------------------------------------------------------------------------|---------|
@@ -74,6 +64,16 @@ We recommend proper configuration when using this chart in a production environm
 | `config.auth.oidc.clientSecret` | Client Secret of the OIDC provider                                         | `""`    |
 | `config.auth.oidc.publicUrl`    | Public URL of the Foreman instance                                         | `""`    |
 | `config.gitlab.host`            | Optional: URL of the GitLab instance (if GitLab features should be active) | `""`    |
+
+### Ingress parameters
+
+| Name                     | Description                                                    | Value                 |
+|--------------------------|----------------------------------------------------------------|-----------------------|
+| `ingress.className`      | The Ingress's class name                                       | `nginx`               |
+| `ingress.host`           | Host foreman should be accessible on                           | `foreman.dev.local`   |
+| `ingress.path`           | Path on which foreman should be accessible on                  | `/`                   |
+| `ingress.annotations`    | Ingress annotations                                            | `{}`                  |
+| `ingress.tls.secretName` | Secret name of an existing secret containing a TLS certificate | `foreman-ingress-tls` |
 
 ### Other parameters
 
