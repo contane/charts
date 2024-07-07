@@ -1,7 +1,5 @@
 name: Feature request
 description: Suggest a new feature for a Helm chart
-labels:
-  - type::feat
 body:
   - type: textarea
     attributes:
@@ -12,13 +10,11 @@ body:
     validations:
       required: false
 
-  - type: dropdown
+  - type: input
     attributes:
       label: Helm chart
-      description: Select the Helm chart you are using.
-      multiple: true
-      options:
-        - foreman
+      description: Name of the Helm chart you are using.
+      placeholder: e.g. foreman
     validations:
       required: true
 

@@ -1,7 +1,5 @@
 name: Bug report
 description: Create a bug report if you found a problem with our charts
-labels:
-  - type::fix
 body:
   - type: markdown
     attributes:
@@ -9,13 +7,11 @@ body:
         Thank you for reporting an issue. Before opening a bug report, please review our documentation.
         If you cannot find a solution, kindly complete the following template with as much information as possible.
 
-  - type: dropdown
+  - type: input
     attributes:
       label: Helm chart
-      description: Select the Helm chart you are using.
-      multiple: true
-      options:
-        - foreman
+      description: Name of the Helm chart you are using.
+      placeholder: e.g. foreman
     validations:
       required: true
 
