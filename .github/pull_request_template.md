@@ -11,6 +11,7 @@ Fixes #(issue)
 N/A
 
 ## Checklist
+
 - [ ] The chart version in Chart.yaml has been updated according to semantic versioning (semver). This update is not required if the changes only impact README.md files.
-- [ ] All variables are document in the Chart's values.yaml and README.md file.
-- [ ] The pull request title is according to the [conventionalcommits.org](https://www.conventionalcommits.org/en/v1.0.0/) specification.
+- [ ] All variables are document in the Chart's values.yaml and README.md files.
+- [ ] The pull request title meets the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification and includes the chart name, for example: `feat(chart-name): Add replica support`

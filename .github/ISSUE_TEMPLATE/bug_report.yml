@@ -1,19 +1,18 @@
 name: Bug report
-description: Create a report if you an issue using our charts
+description: Create a bug report if you found a problem with our charts
 labels:
   - type::fix
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting an issue. Before opening a bug report, please review our extensive documentation. If you cannot find a solution, kindly complete the following template.
-  
-        Please provide as much information as possible in the form below.
+        Thank you for reporting an issue. Before opening a bug report, please review our documentation.
+        If you cannot find a solution, kindly complete the following template with as much information as possible.
 
   - type: dropdown
     attributes:
       label: Helm chart
-      description: Select the Helm Chart you are using.
+      description: Select the Helm chart you are using.
       multiple: true
       options:
         - foreman
@@ -30,22 +29,22 @@ body:
 
   - type: textarea
     attributes:
-      label: Describe the issue
-      description: A clear, concise and short description of what the issue is.
+      label: Actual behavior (issue description)
+      description: A clear, concise and short description of the issue you are facing. Please provide textual output instead of screenshots.
     validations:
       required: true
 
   - type: textarea
     attributes:
       label: Expected behavior
-      description: If possible please provide textual output instead of screenshots.
+      description: What should happen instead.
 
   - type: textarea
     attributes:
       label: Steps to reproduce
-      description: Add a guide for reproducing your issue.
+      description: A step-by-step guide for reproducing the issue.
       placeholder: |
-        1. Installtion via ...
+        1. Installation via ...
         2. Run ...
         3. See error ...
     validations:
@@ -54,9 +53,9 @@ body:
   - type: textarea
     attributes:
       label: Custom configuration
-      description: Add any parameter used via `--set` or as a `values.yaml` customization.
+      description: Any parameter used via `--set` or as a `values.yaml` customization.
 
   - type: textarea
     attributes:
       label: Additional information
-      description: Tell us anything else you think we should know.
+      description: Anything else you think we should know.
