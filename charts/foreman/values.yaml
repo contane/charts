@@ -1,7 +1,7 @@
 ## @section Global configuration options
 ##
 global:
-  ## @param nameOverride String to partially override common.names.fullname
+  ## @param nameOverride String to partially override foreman standard name
   ##
   nameOverride: ""
   ## @param commonLabels Labels to add to all deployed objects
