@@ -1,0 +1,62 @@
+name: Bug report
+description: Create a report if you an issue using our charts
+labels:
+  - type::fix
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue. Before opening a bug report, please review our extensive documentation. If you cannot find a solution, kindly complete the following template.
+  
+        Please provide as much information as possible in the form below.
+
+  - type: dropdown
+    attributes:
+      label: Helm chart
+      description: Select the Helm Chart you are using.
+      multiple: true
+      options:
+        - foreman
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Helm chart version
+      description: Version of the Helm chart you are using.
+      placeholder: e.g. 1.2.3
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Describe the issue
+      description: A clear, concise and short description of what the issue is.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: If possible please provide textual output instead of screenshots.
+
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: Add a guide for reproducing your issue.
+      placeholder: |
+        1. Installtion via ...
+        2. Run ...
+        3. See error ...
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Custom configuration
+      description: Add any parameter used via `--set` or as a `values.yaml` customization.
+
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Tell us anything else you think we should know.
