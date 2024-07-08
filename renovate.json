@@ -6,7 +6,8 @@
   "packageRules": [
     {
       "matchFileNames": ["charts/**/*"],
-      "extends": [":semanticCommitType(fix)"]
+      "extends": [":semanticCommitType(fix)"],
+      "bumpVersion": "patch"
     }
   ],
   "customManagers": [
