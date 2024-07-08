@@ -23,6 +23,19 @@ jobs:
         uses: azure/setup-helm@v4.2.0
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Prepare PGP key
+        run: |
+          # The IFS="" ensures the multiline PGP_PRIVATE_KEY is read correctly, preserving newlines and spaces.
+          IFS=""
+          echo "$PGP_PRIVATE_KEY" | gpg --dearmor > $HOME/secring.gpg
+          echo "$PGP_PASSPHRASE" > $HOME/passphrase.txt
+          
+          # Set environment variables in $GITHUB_ENV to make them accessible to subsequent steps in the workflow.
+          echo "CR_KEYRING=$HOME/secring.gpg" >> "$GITHUB_ENV"
+          echo "CR_PASSPHRASE_FILE=$HOME/passphrase.txt" >> "$GITHUB_ENV"
+        env:
+          PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
+          PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
