@@ -1,0 +1,45 @@
+name: Check chart versions
+on:
+  pull_request:
+    paths:
+      - 'charts/**'
+
+permissions:
+  contents: read
+
+jobs:
+  chart-version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for changed charts
+        shell: bash
+        id: check-charts
+        run: |
+          cd charts || exit 1
+          for directory in */; do
+            if git diff -s --exit-code "${{ github.event.repository.default_branch }}..HEAD" -- "$directory"; then
+              echo "No changes detected for $directory"
+              continue
+            fi
+            echo "Changes detected for $directory"
+            # Obtain the previous and current version
+            previous_version=$(git show "${{ github.event.repository.default_branch }}:charts/$directory/Chart.yaml" | grep -E '^version: ' | awk '{print $2}')
+            current_version=$(grep -E '^version: ' "$directory/Chart.yaml" | awk '{print $2}')
+            # Ensure the version has changed
+            if [[ "$previous_version" == "$current_version" ]]; then
+              echo "Version bump required for $directory"
+              echo "version_bump_required=true" >> "$GITHUB_ENV"
+            fi
+            # Ensure the new version is greater than the previous version
+            if ! printf '%s\n%s' "$previous_version" "$current_version" | sort -VC; then
+              echo "Invalid version bump for $directory"
+              echo "version_bump_required=true" >> "$GITHUB_ENV"
+            fi
+          done
+      - name: Fail if version bump required
+        if: env.version_bump_required == 'true'
+        run: exit 1
