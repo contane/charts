@@ -1,8 +1,8 @@
 name: Check chart versions
 on:
   pull_request:
-    paths:
-      - 'charts/**'
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -11,35 +11,42 @@ jobs:
   chart-version-bump:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout pull request
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Fetch default branch
+        run: git fetch origin ${{ github.event.repository.default_branch }} --depth=1
+
       - name: Check for changed charts
         shell: bash
         id: check-charts
         run: |
           cd charts || exit 1
+          failed=false
           for directory in */; do
-            if git diff -s --exit-code "${{ github.event.repository.default_branch }}..HEAD" -- "$directory"; then
-              echo "No changes detected for $directory"
+            directory=${directory%*/} # remove trailing slash
+            if git diff -s --exit-code "origin/${{ github.event.repository.default_branch }}..HEAD" -- "$directory"; then
+              echo "$directory: No changes detected"
               continue
             fi
-            echo "Changes detected for $directory"
+            echo "$directory: Changes detected"
             # Obtain the previous and current version
-            previous_version=$(git show "${{ github.event.repository.default_branch }}:charts/$directory/Chart.yaml" | grep -E '^version: ' | awk '{print $2}')
+            previous_version=$(git show "origin/${{ github.event.repository.default_branch }}:charts/$directory/Chart.yaml" | grep -E '^version: ' | awk '{print $2}')
             current_version=$(grep -E '^version: ' "$directory/Chart.yaml" | awk '{print $2}')
-            # Ensure the version has changed
+            # Ensure the version has changed, and is greater than the previous version
             if [[ "$previous_version" == "$current_version" ]]; then
-              echo "Version bump required for $directory"
-              echo "version_bump_required=true" >> "$GITHUB_ENV"
-            fi
-            # Ensure the new version is greater than the previous version
-            if ! printf '%s\n%s' "$previous_version" "$current_version" | sort -VC; then
-              echo "Invalid version bump for $directory"
-              echo "version_bump_required=true" >> "$GITHUB_ENV"
+              echo "$directory: Version bump required! Current version: $current_version"
+              failed=true
+            elif ! printf '%s\n%s' "$previous_version" "$current_version" | sort -VC; then
+              echo "$directory: Invalid version bump! ($previous_version -> $current_version)"
+              failed=true
+            else
+              echo "$directory: $previous_version -> $current_version"
             fi
           done
-      - name: Fail if version bump required
-        if: env.version_bump_required == 'true'
-        run: exit 1
+          if [ "$failed" = true ]; then
+            exit 1
+          fi
