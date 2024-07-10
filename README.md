@@ -53,6 +53,22 @@ Follow these steps to get started:
     kubectl get all -l app.kubernetes.io/instance=my-custom-release
     ```
 
+## Verifying Charts
+
+To ensure the integrity and authenticity of the Helm charts, you can verify them by checking their provenance files, which contain digital signatures that confirm the chart's origin and contents. Follow these steps to verify a chart:
+
+1. **Download the chart and its provenance file**:
+    ```bash
+    helm fetch contane/<chart-name> --prov
+    ```
+
+2. **Verify the chart's integrity**:
+    ```bash
+    helm verify <chart-name>-<version>.tgz
+    ```
+
+This command will check the chart against its provenance file and confirm whether the verification was successful. Verifying charts helps ensure they have not been tampered with and are from a trusted source. For more detailed information on chart verification, refer to the [Helm documentation](https://helm.sh/docs/topics/provenance/).
+
 ## Configuration
 
 You can customize the charts by creating a `values.yaml` file and providing it during installation:
