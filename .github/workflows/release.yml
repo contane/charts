@@ -23,6 +23,8 @@ jobs:
         uses: azure/setup-helm@v4.2.0
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Install sigstore plugin
+        run: helm plugin install https://github.com/sigstore/helm-sigstore
       - name: Prepare PGP key
         run: |
           # The IFS="" ensures the multiline PGP_PRIVATE_KEY is read correctly, preserving newlines and spaces.
@@ -48,7 +50,7 @@ jobs:
           registry: ghcr.io
           username: "contane-bot"
           password: ${{ secrets.CONTANE_BOT_TOKEN }}
-      - name: Push chart to GitHub Container Registry
+      - name: Push chart to GitHub Container Registry and sigstore Rekor
         run: |
           shopt -s nullglob
           for pkg in .cr-release-packages/*.tgz; do
@@ -56,4 +58,5 @@ jobs:
               break
             fi
             helm push "${pkg}" oci://ghcr.io/${{ github.repository }}
+            helm sigstore upload "${pkg}"
           done

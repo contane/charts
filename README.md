@@ -55,6 +55,22 @@ Follow these steps to get started:
 
 ## Verifying Charts
 
+### Using the OCI Registry
+
+If you are using our OCI registry you need to use the [helm-sigstore](https://github.com/sigstore/helm-sigstore) plugin to verify the downloaded artifact.
+
+1. **Install the [Helm sigstore](https://github.com/sigstore/helm-sigstore) plugin**
+   ```bash
+   helm plugin install https://github.com/sigstore/helm-sigstore
+   ```
+
+2. **Verify the chart's integrity**:
+    ```bash
+    helm sigstore verify <chart-name>-<version>.tgz
+    ```
+
+### Using the Helm Chart Repository
+
 To ensure the integrity and authenticity of the Helm charts, you can verify them by checking their provenance files, which contain digital signatures that confirm the chart's origin and contents. Follow these steps to verify a chart:
 
 1. **Download the chart and its provenance file**:
