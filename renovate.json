@@ -6,7 +6,8 @@
   "packageRules": [
     {
       "matchFileNames": ["charts/**/*"],
-      "extends": [":semanticCommitType(fix)"],
+      "semanticCommitType": "fix",
+      "semanticCommitScope": "{{parentDir}}",
       "bumpVersion": "patch"
     }
   ],
