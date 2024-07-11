@@ -2,6 +2,27 @@ apiVersion: v1
 entries:
   foreman:
   - apiVersion: v2
+    appVersion: 0.2.0
+    created: "2024-07-11T20:21:59.686547732Z"
+    description: A web UI for managing Renovate jobs.
+    digest: e42d759ad8808cc3858a0394abce48e63b468f8d6db5f89cb0edf6e202297276
+    home: https://contane.net
+    keywords:
+    - contane
+    - foreman
+    - renovate
+    - renovate-ui
+    maintainers:
+    - name: Contane
+      url: https://github.com/contane/charts
+    name: foreman
+    sources:
+    - https://github.com/contane/charts/tree/main/charts/foreman
+    type: application
+    urls:
+    - https://github.com/contane/charts/releases/download/foreman-0.2.0/foreman-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
     appVersion: 0.1.0
     created: "2024-07-07T14:36:01.618753293Z"
     description: A web UI for managing Renovate jobs.
@@ -53,4 +74,4 @@ entries:
     urls:
     - https://github.com/contane/charts/releases/download/foreman-0.1.0/foreman-0.1.0.tgz
     version: 0.1.0
-generated: "2024-07-07T14:36:01.618765225Z"
+generated: "2024-07-11T20:21:59.686565826Z"
