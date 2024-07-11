@@ -4,7 +4,7 @@ name: foreman
 description: A web UI for managing Renovate jobs.
 version: 0.1.2
 # renovate: image=contane/foreman
-appVersion: 0.1.0
+appVersion: 0.2.0
 home: https://contane.net
 keywords:
   - contane
