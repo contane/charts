@@ -31,10 +31,12 @@ jobs:
           IFS=""
           echo "$PGP_PRIVATE_KEY" | gpg --dearmor > $HOME/secring.gpg
           echo "$PGP_PASSPHRASE" > $HOME/passphrase.txt
+          echo "$PGP_PUBLIC_KEY" > $HOME/pubring.gpg
           
           # Set environment variables in $GITHUB_ENV to make them accessible to subsequent steps in the workflow.
           echo "CR_KEYRING=$HOME/secring.gpg" >> "$GITHUB_ENV"
           echo "CR_PASSPHRASE_FILE=$HOME/passphrase.txt" >> "$GITHUB_ENV"
+          echo "KEYRING=$HOME/pubring.gpg" >> "$GITHUB_ENV"
         env:
           PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
           PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
