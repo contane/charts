@@ -25,6 +25,5 @@ jobs:
         with:
           scopes: |
             foreman
-            deps
             repo
           requiredScopes: true
