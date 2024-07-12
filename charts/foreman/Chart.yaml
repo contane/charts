@@ -2,7 +2,7 @@ apiVersion: v2
 type: application
 name: foreman
 description: A web UI for managing Renovate jobs.
-version: 0.2.0
+version: 0.2.1
 # renovate: image=contane/foreman
 appVersion: 0.2.0
 home: https://contane.net
@@ -16,3 +16,7 @@ maintainers:
     url: https://github.com/contane/charts
 sources:
   - https://github.com/contane/charts/tree/main/charts/foreman
+annotations:
+  artifacthub.io/signKey: |
+    fingerprint: 4E99273F2C2730A223F3388723BA8AFA1DC4940A
+    url: https://keybase.io/joluk/pgp_keys.asc?fingerprint=4E99273F2C2730A223F3388723BA8AFA1DC4940A
