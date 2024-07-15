@@ -4,6 +4,7 @@ on:
   pull_request_target:
     branches:
       - main
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -22,8 +23,9 @@ jobs:
           git config user.name "contane-bot"
           git config user.email "160241315+contane-bot@users.noreply.github.com"
       - name: Install readme-generator-for-helm
-        run: npm install -g @bitnami/readme-generator-for-helm
-      - name: Update REAMDE.md
+        run: npm install -g @bitnami/readme-generator-for-helm@2.6.1
+      - name: Update README.md
+        shell: bash
         run: |
           cd charts || exit 1
           for chart in */; do
