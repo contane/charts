@@ -19,40 +19,57 @@ We recommend proper configuration when using this chart in a production environm
 
 ## Parameters
 
-### Global parameters
+### Global configuration options
 
 | Name                       | Description                                        | Value |
-|----------------------------|----------------------------------------------------|-------|
+| -------------------------- | -------------------------------------------------- | ----- |
 | `global.nameOverride`      | String to partially override foreman standard name | `""`  |
 | `global.commonLabels`      | Labels to add to all deployed objects              | `{}`  |
 | `global.commonAnnotations` | Annotations to add to all deployed objects         | `{}`  |
 
-### Image parameters
+### Image configuration
 
 | Name                | Description                              | Value             |
-|---------------------|------------------------------------------|-------------------|
+| ------------------- | ---------------------------------------- | ----------------- |
 | `image.repository`  | Docker image repository                  | `contane/foreman` |
-| `image.tag`         | Docker image tag                         | `0.1.0`           |
+| `image.tag`         | Docker image tag                         | `0.3.0`           |
 | `image.pullPolicy`  | Docker image pull policy                 | `IfNotPresent`    |
 | `image.pullSecrets` | Docker registry secret names as an array | `[]`              |
 
-### Resource parameters
+### Common configuration options
 
-| Name                        | Description                       | Value   |
-|-----------------------------|-----------------------------------|---------|
-| `resources.limits.memory`   | Memory limits for the container   | `512Mi` |
-| `resources.limits.cpu`      | CPU limits for the container      | `250m`  |
-| `resources.requests.memory` | Memory requests for the container | `256Mi` |
-| `resources.requests.cpu`    | CPU requests for the container    | `100m`  |
+| Name                 | Description                  | Value |
+| -------------------- | ---------------------------- | ----- |
+| `replicaCount`       | Number of replicas to deploy | `2`   |
+| `serviceAccountName` | Service Account Name         | `""`  |
 
-### Deployment parameters
+### Resource requests and limits
+
+| Name                        | Description                                             | Value   |
+| --------------------------- | ------------------------------------------------------- | ------- |
+| `resources.limits.memory`   | The maximum amount of memory that the container can use | `512Mi` |
+| `resources.limits.cpu`      | The maximum amount of CPU that the container can use    | `250m`  |
+| `resources.requests.memory` | The requested memory for the container                  | `256Mi` |
+| `resources.requests.cpu`    | The requested CPU for the container                     | `100m`  |
+
+### Ingress configuration
+
+| Name                     | Description                          | Value                 |
+| ------------------------ | ------------------------------------ | --------------------- |
+| `ingress.className`      | Ingress class name                   | `nginx`               |
+| `ingress.host`           | IP or hostname to access the service | `foreman.dev.local`   |
+| `ingress.path`           | Path within the url structure        | `/`                   |
+| `ingress.annotations`    | Ingress annotations                  | `{}`                  |
+| `ingress.tls.secretName` | TLS secret name                      | `foreman-ingress-tls` |
+
+### Application runtime configuration
 
 | Name                            | Description                                                                | Value   |
-|---------------------------------|----------------------------------------------------------------------------|---------|
+| ------------------------------- | -------------------------------------------------------------------------- | ------- |
 | `config.existingSecret`         | Name of an existing secret containing the configuration                    | `""`    |
 | `config.existingConfigMap`      | Name of an existing configmap containing the configuration                 | `""`    |
-| `config.cronJob.namespace`      | Namespace where the Renovate CronJob is deployed                           | `""`    |
-| `config.cronJob.name`           | Name of the Renovate CronJob                                               | `""`    |
+| `config.cronJob.namespace`      | Namespace where the CronJob is deployed                                    | `""`    |
+| `config.cronJob.name`           | Name of the CronJob                                                        | `""`    |
 | `config.cookies.key`            | Key which is used to encrypt the session cookie                            | `""`    |
 | `config.cookies.maxAge`         | Max age of the session cookie, e.g. "24h" or "7 days"                      | `""`    |
 | `config.auth.local.enabled`     | Enable local authentication                                                | `false` |
@@ -62,22 +79,5 @@ We recommend proper configuration when using this chart in a production environm
 | `config.auth.oidc.issuer`       | Issuer of the OIDC provider                                                | `""`    |
 | `config.auth.oidc.clientId`     | Client ID of the OIDC provider                                             | `""`    |
 | `config.auth.oidc.clientSecret` | Client Secret of the OIDC provider                                         | `""`    |
-| `config.auth.oidc.publicUrl`    | Public URL of the Foreman instance                                         | `""`    |
+| `config.auth.oidc.publicUrl`    | Public URL of the foreman instance                                         | `""`    |
 | `config.gitlab.host`            | Optional: URL of the GitLab instance (if GitLab features should be active) | `""`    |
-
-### Ingress parameters
-
-| Name                     | Description                                                    | Value                 |
-|--------------------------|----------------------------------------------------------------|-----------------------|
-| `ingress.className`      | The Ingress's class name                                       | `nginx`               |
-| `ingress.host`           | Host foreman should be accessible on                           | `foreman.dev.local`   |
-| `ingress.path`           | Path on which foreman should be accessible on                  | `/`                   |
-| `ingress.annotations`    | Ingress annotations                                            | `{}`                  |
-| `ingress.tls.secretName` | Secret name of an existing secret containing a TLS certificate | `foreman-ingress-tls` |
-
-### Other parameters
-
-| Name                 | Description                  | Value |
-|----------------------|------------------------------|-------|
-| `replicaCount`       | Number of replicas to deploy | `2`   |
-| `serviceAccountName` | Service Account Name         | `""`  |
