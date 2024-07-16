@@ -42,7 +42,7 @@ jobs:
         env:
           PGP_PRIVATE_KEY: "${{ secrets.PGP_PRIVATE_KEY }}"
           PGP_PASSPHRASE: "${{ secrets.PGP_PASSPHRASE }}"
-          PGP_PUBLIC_KEY: "${{ secrets.PGP_PUBLIC_KEY }}"
+          PGP_PUBLIC_KEY_BINARY: "${{ secrets.PGP_PUBLIC_KEY_BINARY }}"
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
