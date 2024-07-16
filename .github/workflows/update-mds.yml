@@ -39,7 +39,7 @@ jobs:
             readme-generator --values "$chart/values.yaml" --readme "$chart/README.md"
             # Check for changes and commit if necessary
             if git status -s | grep "$chart"; then
-              git add "$chart" && git commit -m "chore(${chart%*/}): Update values in README.md" # Remove trailing slash
+              git add "$chart" && git commit -m "docs(${chart%*/}): Update values in README.md" # Remove trailing slash
             fi
           done
       - name: Push changes
