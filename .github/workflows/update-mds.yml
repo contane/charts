@@ -22,46 +22,48 @@ jobs:
         run: |
           git config user.name "contane-bot"
           git config user.email "160241315+contane-bot@users.noreply.github.com"
-      - name: Install readme-generator-for-helm
-        run: npm install -g @bitnami/readme-generator-for-helm@2.6.1
-      - name: Update README.md
-        shell: bash
+      - name: Gather pull request information
         run: |
+          NUM_CHANGED_CHARTS=0
           cd charts || exit 1
           for chart in */; do
             # Check if values.yaml has changed
-            if git diff --name-only HEAD~1 | grep -q "$chart/values.yaml"; then
-              echo "$chart: No values.yaml changes detected"
+            if git diff --name-only HEAD~1 | grep -q "$chart"; then
+              echo "$chart: Changes detected"
               continue
             fi
-            echo "$chart: values.yaml changes detected"
-            echo "Updating README.md for $chart"
-            readme-generator --values "$chart/values.yaml" --readme "$chart/README.md"
+            echo "$chart: Changes detected"
+            NUM_CHANGED_CHARTS=$((NUM_CHANGED_CHARTS + 1))
+            echo "CHANGED_CHART=$chart" >> "$GITHUB_ENV"
           done
+          if [ "$NUM_CHANGED_CHARTS" -eq 0 ]; then
+            echo "No charts have changed"
+            exit 0
+          fi
+          if [ "$NUM_CHANGED_CHARTS" -gt 1 ]; then
+              echo "Multiple charts have changed, only update one Chart per PR"
+              exit 1
+          fi
+          if git diff --name-only HEAD~1 | grep -q "$CHANGED_CHART/values.yaml"; then
+            echo "$CHANGED_CHART: No values.yaml changes detected"
+            exit 0
+          fi
+          echo "$CHANGED_CHART: values.yaml changes detected"
+          echo "VALUES_CHANGED=true" >> "$GITHUB_ENV"
+      - name: Install readme-generator-for-helm
+        if: env.VALUES_CHANGED == 'true'
+        run: npm install -g @bitnami/readme-generator-for-helm@2.6.1
+      - name: Update README.md
+        if: env.VALUES_CHANGED == 'true'
+        shell: bash
+        run: |
+          cd charts || exit 1
+          echo "Updating README.md for $CHANGED_CHART"
+          readme-generator --values "$CHANGED_CHART/values.yaml" --readme "$CHANGED_CHART/README.md"
       - name: Update ArtifactHub change annotations
         shell: bash
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
-          add_changes_to_chart_yaml() {
-            local file_path="Chart.yaml"
-            local changes=$1
-            if [ ! -f "$file_path" ]; then
-              echo "Chart.yaml not found!"
-              exit 1
-            fi
-            chart=$(cat "$file_path")
-            # Check if annotations exist
-            if ! grep -q "annotations:" <<< "$chart"; then
-              chart=$(echo "$chart"$'\n'annotations:)
-            fi
-            # Check if artifacthub.io/changes annotation exists
-            if ! grep -q "artifacthub.io/changes:" <<< "$chart"; then
-              chart=$(echo "$chart"$'\n'  artifacthub.io/changes: | sed 's/^/  /')
-            fi
-            # Append the new changes to the existing ones
-            chart=$(echo "$chart"$'\n'"$changes" | sed 's/^/  /')
-            echo "$chart" > "$file_path"
-          }
           # Parse PR title to create changelog entries
           changes=""
           if [[ $PR_TITLE == *"feat:"* ]]; then
@@ -71,9 +73,25 @@ jobs:
             changes="$changes"$'\n'  - kind: bugfix
             changes="$changes"$'\n'    description: "${PR_TITLE#*: }"
           fi
-          add_changes_to_chart_yaml "$changes"
+          local file_path="Chart.yaml"
+          if [ ! -f "$file_path" ]; then
+            echo "Chart.yaml not found!"
+            exit 1
+          fi
+          chart=$(cat "$file_path")
+          # Check if annotations exist
+          if ! grep -q "annotations:" <<< "$chart"; then
+            chart=$(echo "$chart"$'\n'annotations:)
+          fi
+          # Check if artifacthub.io/changes annotation exists
+          if ! grep -q "artifacthub.io/changes:" <<< "$chart"; then
+            chart=$(echo "$chart"$'\n'  artifacthub.io/changes: | sed 's/^/  /')
+          fi
+          # Append the new changes to the existing ones
+          chart=$(echo "$chart"$'\n'"$changes" | sed 's/^/  /')
+          echo "$chart" > "$file_path"
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "docs(${chart%*/}): Update README.md, CHANGELOG.md and/or Chart.yaml" # Remove trailing slash
+          git commit -m "docs(${chart%*/}): Generate documentation" # Remove trailing slash
           git push
