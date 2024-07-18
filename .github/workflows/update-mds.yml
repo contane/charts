@@ -74,11 +74,6 @@ jobs:
           add_changes_to_chart_yaml "$changes"
       - name: Commit and push changes
         run: |
-          cd charts || exit 1
-            for chart in */; do
-              # Check for changes and commit if necessary
-            if git status -s | grep "$chart"; then
-              git add "$chart" && git commit -m "docs(${chart%*/}): Update values in README.md" # Remove trailing slash
-              git push
-            fi
-          done
+          git add .
+          git commit -m "docs(${chart%*/}): Update README.md, CHANGELOG.md and/or Chart.yaml" # Remove trailing slash
+          git push
