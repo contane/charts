@@ -20,11 +20,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-          token: ${{secrets.CONTANE_BOT_TOKEN}}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.CONTANE_BOT_TOKEN }}
       - name: Gather pull request information
         id: gather-information
+        shell: bash
         run: |
           NUM_CHANGED_CHARTS=0
           cd charts || exit 1
@@ -55,17 +56,18 @@ jobs:
       # Source: https://github.community/t/no-output-on-process-completed-with-exit-code-1/123821/3
       - id: show-error
         name: Show error
-        if: ${{ steps.gather-inforation.outputs.failed }}
+        if: ${{ steps.gather-information.outputs.failed }}
         uses: actions/github-script@7.0.1
         with:
           script: |
-            if (!${{ steps.gather-inforation.outputs.error }}) {
-              core.setFailed(${{ steps.gather-inforation.outputs.error }});
+            if (!${{ steps.gather-information.outputs.error }}) {
+              core.setFailed(${{ steps.gather-information.outputs.error }});
             }
   update-documentation:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    needs: gather-information
     if: ${{ needs.gather-information.outputs.failed != 'true' }}
     steps:
       - name: Checkout
