@@ -1,4 +1,4 @@
-name: Update README.md
+name: Update documentation
 
 on:
   pull_request_target:
