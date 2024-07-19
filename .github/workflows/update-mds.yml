@@ -89,6 +89,16 @@ jobs:
           cd charts || exit 1
           echo "Updating README.md for $CHANGED_CHART"
           readme-generator --values "$CHANGED_CHART/values.yaml" --readme "$CHANGED_CHART/README.md"
+      - name: Update changelog.md
+        shell: bash
+        run: |
+          echo "Generating changelog for $CHANGED_CHART"
+          npx semantic-release --dry-run --no-ci --plugins @semantic-release/release-notes-generator > $CHANGED_CHART/release-notes.md
+          # Extract relevant part
+          sed -n '/### \[/{:a;n;/### \[/{p;q};p;ba}' $CHANGED_CHART/release-notes.md > $CHANGED_CHART/CHANGELOG.md
+          rm $CHANGED_CHART/release-notes.md
+      - name: Install changelog-generator
+        run: npm install -g github-changelog-generator
       - name: Update ArtifactHub change annotations
         shell: bash
         run: |
