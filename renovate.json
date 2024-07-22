@@ -11,7 +11,7 @@
       "bumpVersion": "patch"
     },
     {
-      "matchFileNames": ["github/**/*"],
+      "matchFileNames": [".github/**/*"],
       "semanticCommitType": "chore",
       "semanticCommitScope": "repo"
     }
