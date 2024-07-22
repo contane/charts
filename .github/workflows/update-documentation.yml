@@ -38,7 +38,7 @@ jobs:
             fi
             echo "$chart: Changes detected"
             NUM_CHANGED_CHARTS=$((NUM_CHANGED_CHARTS + 1))
-            echo "CHANGED_CHART=$chart" >> "$GITHUB_ENV"
+            echo "CHANGED_CHART=\"$chart\"" >> "$GITHUB_ENV"
           done
           if [ "$NUM_CHANGED_CHARTS" -eq 0 ]; then
             echo "No charts have changed"
