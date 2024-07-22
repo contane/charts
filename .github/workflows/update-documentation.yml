@@ -133,5 +133,5 @@ jobs:
       - name: Commit and push changes
         run: |
           git add .
-          git commit -m "docs(${chart%*/}): Generate documentation" # Remove trailing slash
+          git commit -m "docs(${CHANGED_CHART%*/}): Generate documentation" # Remove trailing slash
           git push
