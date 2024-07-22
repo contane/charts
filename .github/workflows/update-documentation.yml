@@ -23,6 +23,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           token: ${{ secrets.CONTANE_BOT_TOKEN }}
+
       - name: Gather pull request information
         id: gather-information
         shell: bash
@@ -40,35 +41,27 @@ jobs:
             echo "CHANGED_CHART=$chart" >> "$GITHUB_ENV"
           done
           if [ "$NUM_CHANGED_CHARTS" -eq 0 ]; then
-            echo "ERROR=No charts have changed" >> "$GITHUB_ENV"
-            echo "FAILED=true" >> "$GITHUB_ENV
+            echo "No charts have changed"
+            exit 1
           fi
           if [ "$NUM_CHANGED_CHARTS" -gt 1 ]; then
-              echo "ERROR=Multiple charts have changed, only update one Chart per PR" >> "$GITHUB_ENV"
-              echo "FAILED=true" >> "$GITHUB_ENV
+            echo "Multiple charts have changed, only update one Chart per PR"
+            exit 1
           fi
           if git diff --name-only HEAD~1 | grep -q "$CHANGED_CHART/values.yaml"; then
             echo "$CHANGED_CHART: No values.yaml changes detected"
           fi
           echo "$CHANGED_CHART: values.yaml changes detected"
           echo "VALUES_CHANGED=true" >> "$GITHUB_ENV"
-      # Using actions/github-scripts because using exit 1 in the script above would not provide any output
-      # Source: https://github.community/t/no-output-on-process-completed-with-exit-code-1/123821/3
-      - id: show-error
-        name: Show error
-        if: ${{ steps.gather-information.outputs.failed }}
-        uses: actions/github-script@7.0.1
-        with:
-          script: |
-            if (!${{ steps.gather-information.outputs.error }}) {
-              core.setFailed(${{ steps.gather-information.outputs.error }});
-            }
+
   update-documentation:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     needs: gather-information
     if: ${{ needs.gather-information.outputs.failed != 'true' }}
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,13 +70,16 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           token: ${{ secrets.CONTANE_BOT_TOKEN }}
+
       - name: Configure Git
         run: |
           git config user.name "contane-bot"
           git config user.email "160241315+contane-bot@users.noreply.github.com"
+
       - name: Install readme-generator-for-helm
         if: ${{ needs.gather-information.outputs.values_changed == 'true' }}
         run: npm install -g @bitnami/readme-generator-for-helm@2.6.1
+
       - name: Update README.md
         if: ${{ needs.gather-information.outputs.values_changed == 'true' }}
         shell: bash
@@ -91,6 +87,7 @@ jobs:
           cd charts || exit 1
           echo "Updating README.md for $CHANGED_CHART"
           readme-generator --values "$CHANGED_CHART/values.yaml" --readme "$CHANGED_CHART/README.md"
+
       - name: Update changelog.md
         shell: bash
         run: |
@@ -99,12 +96,13 @@ jobs:
           # Extract relevant part
           sed -n '/### \[/{:a;n;/### \[/{p;q};p;ba}' $CHANGED_CHART/release-notes.md > $CHANGED_CHART/CHANGELOG.md
           rm $CHANGED_CHART/release-notes.md
+
       - name: Install changelog-generator
         run: npm install -g github-changelog-generator
+
       - name: Update ArtifactHub change annotations
         shell: bash
         run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
           # Parse PR title to create changelog entries
           changes=""
           if [[ $PR_TITLE == *"feat:"* ]]; then
@@ -131,6 +129,7 @@ jobs:
           # Append the new changes to the existing ones
           chart=$(echo "$chart"$'\n'"$changes" | sed 's/^/  /')
           echo "$chart" > "$file_path"
+
       - name: Commit and push changes
         run: |
           git add .
