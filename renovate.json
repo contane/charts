@@ -9,6 +9,11 @@
       "semanticCommitType": "fix",
       "semanticCommitScope": "{{parentDir}}",
       "bumpVersion": "patch"
+    },
+    {
+      "matchFileNames": [".github/**/*"],
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "repo"
     }
   ],
   "customManagers": [
