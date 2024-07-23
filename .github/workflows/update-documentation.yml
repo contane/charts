@@ -4,6 +4,8 @@ on:
   pull_request_target:
     branches:
       - main
+    paths:
+      - "charts/**"
 
 jobs:
   gather-information:
@@ -31,7 +33,7 @@ jobs:
           NUM_CHANGED_CHARTS=0
           cd charts || exit 1
           for chart in */; do
-            # Check if values.yaml has changed
+            # Check if there are changes
             if git diff --name-only HEAD~1 | grep -q "$chart"; then
               echo "$chart: No changes detected"
               continue
@@ -40,12 +42,8 @@ jobs:
             NUM_CHANGED_CHARTS=$((NUM_CHANGED_CHARTS + 1))
             echo "CHANGED_CHART=\"$chart\"" >> "$GITHUB_ENV"
           done
-          if [ "$NUM_CHANGED_CHARTS" -eq 0 ]; then
-            echo "No charts have changed"
-            exit 1
-          fi
           if [ "$NUM_CHANGED_CHARTS" -gt 1 ]; then
-            echo "Multiple charts have changed, only update one Chart per PR"
+            echo "Multiple charts have changed, only update one chart per PR"
             exit 1
           fi
           if git diff --name-only HEAD~1 | grep -q "$CHANGED_CHART/values.yaml"; then
@@ -92,10 +90,10 @@ jobs:
         shell: bash
         run: |
           echo "Generating changelog for $CHANGED_CHART"
-          npx semantic-release --dry-run --no-ci --plugins @semantic-release/release-notes-generator > $CHANGED_CHART/release-notes.md
+          npx semantic-release --dry-run --no-ci --plugins @semantic-release/release-notes-generator > "$CHANGED_CHART/release-notes.md"
           # Extract relevant part
-          sed -n '/### \[/{:a;n;/### \[/{p;q};p;ba}' $CHANGED_CHART/release-notes.md > $CHANGED_CHART/CHANGELOG.md
-          rm $CHANGED_CHART/release-notes.md
+          sed -n '/### \[/{:a;n;/### \[/{p;q};p;ba}' "$CHANGED_CHART/release-notes.md" > "$CHANGED_CHART/CHANGELOG.md"
+          rm "$CHANGED_CHART/release-notes.md"
 
       - name: Install changelog-generator
         run: npm install -g github-changelog-generator
@@ -108,7 +106,7 @@ jobs:
           if [[ $PR_TITLE == *"feat:"* ]]; then
             changes="$changes"$'\n'  - kind: feature
             changes="$changes"$'\n'    description: "${PR_TITLE#*: }"
-          elif [[ $PR_TITLE == *"fix:"* ]]; then
+          elif [[ "$PR_TITLE" == *"fix:"* ]]; then
             changes="$changes"$'\n'  - kind: bugfix
             changes="$changes"$'\n'    description: "${PR_TITLE#*: }"
           fi
