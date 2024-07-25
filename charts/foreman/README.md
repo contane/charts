@@ -32,7 +32,7 @@ We recommend proper configuration when using this chart in a production environm
 | Name                | Description                              | Value             |
 | ------------------- | ---------------------------------------- | ----------------- |
 | `image.repository`  | Docker image repository                  | `contane/foreman` |
-| `image.tag`         | Docker image tag                         | `0.3.0`           |
+| `image.tag`         | Docker image tag                         | `0.4.0`           |
 | `image.pullPolicy`  | Docker image pull policy                 | `IfNotPresent`    |
 | `image.pullSecrets` | Docker registry secret names as an array | `[]`              |
 
