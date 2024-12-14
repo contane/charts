@@ -1,0 +1,135 @@
+name: Update documentation
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - "charts/**"
+
+jobs:
+  gather-information:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      chart: ${{ steps.gather-information.outputs.chart }}
+      values_changed: ${{ steps.gather-information.outputs.values_changed }}
+      failed: ${{ steps.gather-information.outputs.failed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.CONTANE_BOT_TOKEN }}
+
+      - name: Gather pull request information
+        id: gather-information
+        shell: bash
+        run: |
+          NUM_CHANGED_CHARTS=0
+          cd charts || exit 1
+          for chart in */; do
+            # Check if there are changes
+            if git diff --name-only HEAD~1 | grep -q "$chart"; then
+              echo "$chart: No changes detected"
+              continue
+            fi
+            echo "$chart: Changes detected"
+            NUM_CHANGED_CHARTS=$((NUM_CHANGED_CHARTS + 1))
+            echo "CHANGED_CHART=\"$chart\"" >> "$GITHUB_ENV"
+          done
+          if [ "$NUM_CHANGED_CHARTS" -gt 1 ]; then
+            echo "Multiple charts have changed, only update one chart per PR"
+            exit 1
+          fi
+          if git diff --name-only HEAD~1 | grep -q "$CHANGED_CHART/values.yaml"; then
+            echo "$CHANGED_CHART: No values.yaml changes detected"
+          fi
+          echo "$CHANGED_CHART: values.yaml changes detected"
+          echo "VALUES_CHANGED=true" >> "$GITHUB_ENV"
+
+  update-documentation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: gather-information
+    if: ${{ needs.gather-information.outputs.failed != 'true' }}
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          token: ${{ secrets.CONTANE_BOT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "contane-bot"
+          git config user.email "160241315+contane-bot@users.noreply.github.com"
+
+      - name: Install readme-generator-for-helm
+        if: ${{ needs.gather-information.outputs.values_changed == 'true' }}
+        run: npm install -g @bitnami/readme-generator-for-helm@2.6.1
+
+      - name: Update README.md
+        if: ${{ needs.gather-information.outputs.values_changed == 'true' }}
+        shell: bash
+        run: |
+          cd charts || exit 1
+          echo "Updating README.md for $CHANGED_CHART"
+          readme-generator --values "$CHANGED_CHART/values.yaml" --readme "$CHANGED_CHART/README.md"
+
+      - name: Update changelog.md
+        shell: bash
+        run: |
+          echo "Generating changelog for $CHANGED_CHART"
+          npx semantic-release --dry-run --no-ci --plugins @semantic-release/release-notes-generator > "$CHANGED_CHART/release-notes.md"
+          # Extract relevant part
+          sed -n '/### \[/{:a;n;/### \[/{p;q};p;ba}' "$CHANGED_CHART/release-notes.md" > "$CHANGED_CHART/CHANGELOG.md"
+          rm "$CHANGED_CHART/release-notes.md"
+
+      - name: Install changelog-generator
+        run: npm install -g github-changelog-generator
+
+      - name: Update ArtifactHub change annotations
+        shell: bash
+        run: |
+          # Parse PR title to create changelog entries
+          changes=""
+          if [[ $PR_TITLE == *"feat:"* ]]; then
+            changes="$changes"$'\n'  - kind: feature
+            changes="$changes"$'\n'    description: "${PR_TITLE#*: }"
+          elif [[ "$PR_TITLE" == *"fix:"* ]]; then
+            changes="$changes"$'\n'  - kind: bugfix
+            changes="$changes"$'\n'    description: "${PR_TITLE#*: }"
+          fi
+          local file_path="Chart.yaml"
+          if [ ! -f "$file_path" ]; then
+            echo "Chart.yaml not found!"
+            exit 1
+          fi
+          chart=$(cat "$file_path")
+          # Check if annotations exist
+          if ! grep -q "annotations:" <<< "$chart"; then
+            chart=$(echo "$chart"$'\n'annotations:)
+          fi
+          # Check if artifacthub.io/changes annotation exists
+          if ! grep -q "artifacthub.io/changes:" <<< "$chart"; then
+            chart=$(echo "$chart"$'\n'  artifacthub.io/changes: | sed 's/^/  /')
+          fi
+          # Append the new changes to the existing ones
+          chart=$(echo "$chart"$'\n'"$changes" | sed 's/^/  /')
+          echo "$chart" > "$file_path"
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "docs(${CHANGED_CHART%*/}): Generate documentation" # Remove trailing slash
+          git push
