@@ -36,7 +36,7 @@ helm install -f my-values.yaml my-foreman \
 | Name                | Description                              | Value             |
 | ------------------- | ---------------------------------------- | ----------------- |
 | `image.repository`  | Docker image repository                  | `contane/foreman` |
-| `image.tag`         | Docker image tag                         | `0.5.0`           |
+| `image.tag`         | Docker image tag                         | `0.5.1`           |
 | `image.pullPolicy`  | Docker image pull policy                 | `IfNotPresent`    |
 | `image.pullSecrets` | Docker registry secret names as an array | `[]`              |
 
