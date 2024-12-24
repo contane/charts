@@ -7,6 +7,31 @@ entries:
         url: https://keybase.io/joluk/pgp_keys.asc?fingerprint=4E99273F2C2730A223F3388723BA8AFA1DC4940A
     apiVersion: v2
     appVersion: 0.5.0
+    created: "2024-12-24T21:21:48.962892487Z"
+    description: A web UI for managing Renovate jobs.
+    digest: fa3648530f9cd508bd8fd5521e4a7985e8a01446ede90921ba3ec2ca427e3e2f
+    home: https://contane.net
+    keywords:
+    - contane
+    - foreman
+    - renovate
+    - renovate-ui
+    maintainers:
+    - name: Contane
+      url: https://github.com/contane/charts
+    name: foreman
+    sources:
+    - https://github.com/contane/charts/tree/main/charts/foreman
+    type: application
+    urls:
+    - https://github.com/contane/charts/releases/download/foreman-0.5.1/foreman-0.5.1.tgz
+    version: 0.5.1
+  - annotations:
+      artifacthub.io/signKey: |
+        fingerprint: 4E99273F2C2730A223F3388723BA8AFA1DC4940A
+        url: https://keybase.io/joluk/pgp_keys.asc?fingerprint=4E99273F2C2730A223F3388723BA8AFA1DC4940A
+    apiVersion: v2
+    appVersion: 0.5.0
     created: "2024-12-24T21:19:24.97646834Z"
     description: A web UI for managing Renovate jobs.
     digest: 083149d4182dd38d96396508e79a574c17ca9f9a44870aab5120a582f3e76d2b
@@ -274,4 +299,4 @@ entries:
     urls:
     - https://github.com/contane/charts/releases/download/foreman-0.1.0/foreman-0.1.0.tgz
     version: 0.1.0
-generated: "2024-12-24T21:19:24.976511711Z"
+generated: "2024-12-24T21:21:48.962992415Z"
