@@ -1,21 +1,25 @@
-# foreman - A Renovate UI
+# Helm chart for Foreman
 
-A Kubernetes application for managing Renovate jobs, developed by [Contane](https://contane.net).
+Foreman is a Kubernetes application for managing Renovate jobs, developed by [Contane](https://contane.net).
 
 Foreman is intended to be deployed together with self-hosted [Mend Renovate](https://www.mend.io/renovate/), either in
 the same or a secondary Kubernetes cluster.
 It provides a user interface for monitoring the Renovate CronJob including interactive progress and logs as well as the
 ability to trigger custom jobs, speeding up the dependency upgrade cycle in the case of many repositories.
 
-For more information consult [Foreman's documentation](https://github.com/contane/foreman).
+## Quick Reference
 
-## TL;DR
+- Repository and documentation: https://github.com/contane/foreman
+- Helm chart on GitHub: https://github.com/contane/charts/tree/main/charts/foreman
+- Helm chart on Artifact Hub: https://artifacthub.io/packages/helm/contane-github/foreman
+- Container image on Docker Hub: https://hub.docker.com/r/contane/foreman
 
-```bash
-helm install my-custom-release oci://ghcr.io/contane/charts/foreman
+Installation (see below for values.yaml parameters):
+
+```sh
+helm install -f my-values.yaml my-foreman \
+    oci://ghcr.io/contane/charts/foreman
 ```
-
-We recommend proper configuration when using this chart in a production environment.
 
 ## Parameters
 
