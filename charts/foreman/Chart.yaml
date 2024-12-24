@@ -2,7 +2,7 @@ apiVersion: v2
 type: application
 name: foreman
 description: A web UI for managing Renovate jobs.
-version: 0.5.1
+version: 0.5.2
 # renovate: image=contane/foreman
 appVersion: 0.5.1
 home: https://contane.net
