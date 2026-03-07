@@ -14,6 +14,11 @@
       "matchFileNames": [".github/**/*"],
       "semanticCommitType": "chore",
       "semanticCommitScope": "repo"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "groupName": "actions"
     }
   ],
   "customManagers": [
