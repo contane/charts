@@ -73,6 +73,8 @@ If you are using our OCI registry, the published chart artifacts are signed with
       --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
     ```
 
+   The certificate identity intentionally pins the release workflow path and branch. Since releases are published by [`release.yml`](/home/lukas/contane/charts-github/.github/workflows/release.yml) on `refs/heads/main`, changes to the workflow file do not change this identity for previous releases. If you need to pin the exact workflow revision for a specific release, add `--certificate-github-workflow-sha <workflow-sha>` with the matching workflow commit SHA for that release.
+
 ### Using the Helm Chart Repository
 
 To ensure the integrity and authenticity of the Helm charts, you can verify them by checking their provenance files, which contain digital signatures that confirm the chart's origin and contents. Follow these steps to verify a chart:

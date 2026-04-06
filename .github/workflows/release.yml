@@ -58,18 +58,10 @@ jobs:
           username: "contane-bot"
           password: ${{ secrets.CONTANE_BOT_TOKEN }}
       - name: Push chart to GitHub Container Registry and sign with Cosign
+        shell: bash
         run: |
           shopt -s nullglob
           for pkg in .cr-release-packages/*.tgz; do
-            output="$(helm push "${pkg}" oci://ghcr.io/${{ github.repository }})"
-            echo "${output}"
-
-            digest="$(printf '%s\n' "${output}" | awk '/^Digest: / { print $2 }')"
-            if [ -z "${digest}" ]; then
-              echo "Failed to determine OCI digest for ${pkg}" >&2
-              exit 1
-            fi
-
             chart="$(helm show chart "${pkg}")"
             name="$(printf '%s\n' "${chart}" | awk -F': ' '$1 == "name" { print $2 }')"
             version="$(printf '%s\n' "${chart}" | awk -F': ' '$1 == "version" { print $2 }')"
@@ -78,5 +70,16 @@ jobs:
               exit 1
             fi
 
-            cosign sign --yes "ghcr.io/${{ github.repository }}/${name}:${version}@${digest}"
+            reference="ghcr.io/${GITHUB_REPOSITORY}/${name}:${version}"
+
+            output="$(helm push "${pkg}" "oci://ghcr.io/${GITHUB_REPOSITORY}")"
+            printf '%s\n' "${output}"
+
+            digest="$(printf '%s\n' "${output}" | awk '/^Digest: / { print $2 }')"
+            if [ -z "${digest}" ]; then
+              printf 'Failed to determine OCI digest for %s\n' "${reference}" >&2
+              exit 1
+            fi
+
+            cosign sign --yes "${reference}@${digest}"
           done
