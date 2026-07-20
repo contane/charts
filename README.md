@@ -59,17 +59,21 @@ Verifying charts helps ensure they have not been tampered with and are from a tr
 
 ### Using the OCI Registry
 
-If you are using our OCI registry, you can use the [helm-sigstore](https://github.com/sigstore/helm-sigstore) plugin to verify the downloaded artifact.
+If you are using our OCI registry, the published chart artifacts are signed with [Cosign](https://github.com/sigstore/cosign) using GitHub Actions OIDC keyless signing. The signatures are recorded in Sigstore's transparency log and can be verified against this repository's release workflow identity.
 
-1. **Install the [Helm sigstore](https://github.com/sigstore/helm-sigstore) plugin**
+1. **Install [Cosign](https://docs.sigstore.dev/cosign/installation/)** and confirm it is available:
    ```bash
-   helm plugin install https://github.com/sigstore/helm-sigstore
+   cosign version
    ```
 
-2. **Verify the chart's integrity**:
+2. **Verify the OCI chart signature**:
     ```bash
-    helm sigstore verify <chart-name>-<version>.tgz
+    cosign verify "ghcr.io/contane/charts/<chart-name>:<version>" \
+      --certificate-identity "https://github.com/contane/charts/.github/workflows/release.yml@refs/heads/main" \
+      --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
     ```
+
+   The certificate identity intentionally pins the release workflow path and branch. Since releases are published by [`release.yml`](/home/lukas/contane/charts-github/.github/workflows/release.yml) on `refs/heads/main`, changes to the workflow file do not change this identity for previous releases. If you need to pin the exact workflow revision for a specific release, add `--certificate-github-workflow-sha <workflow-sha>` with the matching workflow commit SHA for that release.
 
 ### Using the Helm Chart Repository
 
